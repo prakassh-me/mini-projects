@@ -1,0 +1,377 @@
+<SettingScreen>:
+    name: 'settingscreen'
+    MDTextField:
+        id: username
+        hint_text: "username"
+        helper_text: "Employee Username"
+        helper_text_mode: "on_focus"
+        icon_left: "account-circle"
+        icon_left_color: app.theme_cls.primary_color
+        pos_hint:{'center_x': 0.5, 'center_y': 0.5}
+        size_hint_x:None
+        width:300
+
+<AboutScreen>:
+    name: 'aboutscreen'
+    MDTextField:
+        id: username
+        hint_text: "username"
+        helper_text: "Employee Username"
+        helper_text_mode: "on_focus"
+        icon_left: "account-circle"
+        icon_left_color: app.theme_cls.primary_color
+        pos_hint:{'center_x': 0.5, 'center_y': 0.5}
+        size_hint_x:None
+        width:300
+
+<LoginScreen>:
+    name: 'Login'
+    MDCard:
+        size_hint: None, None
+        size: 300, 250
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        elevation: 5
+        padding: 25
+        spacing: 25
+        orientation: 'vertical'
+    
+
+        MDTextField:
+            id: username
+            hint_text: "username"
+            helper_text: "Employee Username"
+            helper_text_mode: "on_focus"
+            icon_left: "account-circle"
+            write_tab: False
+            icon_left_color: app.theme_cls.primary_color
+            pos_hint:{'center_x': 0.5, 'center_y': 0.5}
+            size_hint_x:None
+            width:200
+        FloatLayout:
+    
+            MDTextField:
+                id: userpassword
+                hint_text: "password"
+                helper_text: "Employee Password"
+                helper_text_mode: "on_focus"
+                icon_left: "key-variant"
+                write_tab: False
+                icon_right_color: app.theme_cls.primary_color
+                pos_hint:{'center_x': 0.5, 'center_y': 0.5}
+                size_hint_x:None
+                width:200
+                password: True
+            MDIconButton:
+                icon: "eye-off"
+                pos_hint: {"center_y": .5,"center_x": .9}
+                theme_text_color: "Hint"
+                on_release:
+                    self.icon = "eye" if self.icon == "eye-off" else "eye-off"
+                    userpassword.password = False if userpassword.password is True else True
+    
+        MDFillRoundFlatIconButton:
+            icon: "login"
+            text: "Login"
+            pos_hint: {'center_x': 0.5}
+            md_bg_color: "orange"
+            on_press: root.logger()
+
+<Newcustomeradd>
+    id: customeradd
+    orientation: "vertical"
+    height:300
+    width:300
+    size_hint_x: None
+    size_hint_y: None
+    MDTextField:
+        id: custname
+        hint_text: "Name"
+        write_tab: False
+        helper_text: "Input --> Enter"
+        helper_text_mode: "on_focus"
+        icon_left: "human-queue"
+        icon_left_color: app.theme_cls.primary_color
+        on_text_validate: app.root.get_screen('main').newcustadd(self.text)
+        size_hint_x:None
+        width:100
+    MDTextField:
+        id: custphonenumber
+        hint_text: "PhoneNumber"
+        write_tab: False
+        helper_text: "Input --> Enter"
+        helper_text_mode: "on_focus"
+        icon_left: "human-queue"
+        icon_left_color: app.theme_cls.primary_color
+        on_text_validate: app.root.get_screen('main').newcustadd(self.text)
+        size_hint_x:None
+        width:150
+    MDTextField:
+        id: custemail
+        hint_text: "Email"
+        write_tab: False
+        helper_text: "Input --> Enter"
+        helper_text_mode: "on_focus"
+        icon_left: "human-queue"
+        icon_left_color: app.theme_cls.primary_color
+        on_text_validate: app.root.get_screen('main').newcustadd(self.text)
+        size_hint_x:None
+        width:150
+    MDTextField:
+        id: custaddress
+        hint_text: "Address"
+        multiline: True
+        write_tab: False
+        helper_text: "Enter for multiple line"
+        helper_text_mode: "on_focus"
+        icon_left: "human-queue"
+        icon_left_color: app.theme_cls.primary_color
+        on_text_validate: app.root.get_screen('main').newcustadd(self.text)
+        size_hint: None, None
+        size: 200, 100
+
+    MDFillRoundFlatIconButton:
+        icon: "login"
+        text: "OK"
+        pos_hint: {'center_x': 0.5}
+        md_bg_color: "orange"
+        on_release: app.root.get_screen('main').addcustomer()
+    
+
+<Salecontent>
+    
+    id: salescontent
+    height:300
+    width:650
+    size_hint_x: None
+    size_hint_y: None
+    padding: 25
+    spacing: 25
+    
+    MDCard:
+        MDBoxLayout:
+            orientation: 'vertical'
+
+            MDFloatLayout:
+
+                MDTextField:
+                    id: cuscheck
+                    hint_text: "Email or PhoneNo"
+                    
+                    helper_text: "Input --> Enter"
+                    helper_text_mode: "on_focus"
+                    icon_left: "human-queue"
+                    icon_left_color: app.theme_cls.primary_color
+                    
+                    size_hint_x:None
+                    width:150
+                    write_tab: False
+                    icon_right_color: app.theme_cls.primary_color
+                    pos_hint:{'center_x': 0.5, 'center_y': 0.6}
+                    on_text_validate: app.root.get_screen('main').customercheck(self.text)
+
+                        
+                MDIconButton:
+                    id: showicon
+                    icon: ""
+                    theme_icon_color: "Custom"
+                    pos_hint: {"center_y": .6,"center_x": .9}
+                    theme_text_color: "Hint"
+            
+                MDFloatingActionButton:
+                    id: fabadd
+                    icon: "account-plus"
+                    pos_hint:{'center_x': 0.5, 'center_y': 0.3}
+                    md_bg_color: app.theme_cls.primary_color
+                    disabled: True
+                    on_release: app.root.get_screen('main').newcust()
+    MDGridLayout:
+        cols: 2
+
+        MDLabel:
+            id: stest
+            font_style: 'H6'
+            text: "Total Amount"
+            width:100
+            size_hint_x: None
+    
+        MDLabel:
+            id: tamount
+            font_style: 'H4'
+            text: app.root.get_screen('main').ids.showtotal.text
+            parent_background: "orange"
+        MDLabel:
+            font_style: 'H6'
+            text: "Amount"
+            width:100
+            size_hint_x: None
+            
+        MDTextField:
+            id: camount
+            input_filter: 'int'
+            icon_left: "currency-inr"
+            icon_left_color: app.theme_cls.primary_color
+            font_size: '20dp'
+            size_hint_x:None
+            width:100
+            write_tab: False
+            on_text: app.root.get_screen('main').bamount(self.text)
+
+        MDLabel:
+            font_style: 'H6'
+            text: "Balance"
+            width:100
+            size_hint_x:None
+            
+        MDLabel:
+            id: sbalance
+            font_style: 'H4'
+            text: "0"
+            width: 100
+            size_hint_x:None
+
+        MDFillRoundFlatIconButton:
+            icon: "cash-check"
+            text: "complete payment"
+            md_bg_color: "orange"
+            on_release: app.root.get_screen('main').salescomplete()
+                
+<UpdateQty>
+    id: updaterow
+    orientation: "vertical"
+    size_hint_y: None
+    height: 40
+    size_hint_x: None
+    width: 150
+
+    MDTextField:
+        id: updateqty
+        input_filter: 'int'
+        hint_text: "Quantity"
+        helper_text: "Input --> Enter"
+        helper_text_mode: "on_focus"
+        icon_left: "cart-plus"
+        icon_left_color: app.theme_cls.primary_color
+        pos_hint:{'center_x': 0.3, 'center_y': 0.5}
+        size_hint_x:None
+        width:100
+        focus: True
+        on_text_validate: app.root.get_screen('main').getqtyupdate()
+
+
+<Content>
+    id: test
+    orientation: "vertical"
+    size_hint_y: None
+    height: 40
+    size_hint_x: None
+    width: 150
+
+    MDTextField:
+        id: qty
+        input_filter: 'int'
+        hint_text: "Quantity"
+        helper_text: "Input --> Enter"
+        helper_text_mode: "on_focus"
+        icon_left: "cart-plus"
+        icon_left_color: app.theme_cls.primary_color
+        pos_hint:{'center_x': 0.3, 'center_y': 0.5}
+        size_hint_x:None
+        width:100
+        focus: True
+        on_text_validate: app.root.get_screen('main').getqty()
+
+<MainScreen>:
+    name: 'main'
+    MDBoxLayout:
+        orientation: "horizontal"
+        adaptive_height: True
+        size_hint: None, None
+        size: 150,200
+        padding: 10
+         
+        pos_hint: {'center_x': .2, 'center_y': .8}
+        MDLabel:
+            text: "Dark Mode"
+
+        MDSwitch:
+            # giving position to the switch on screen
+            
+            on_active: app.themeswitch(*args)
+            
+
+    MDTextField:
+        id: search
+        pos_hint: {'center_x': 0.2,'center_y':0.7}
+        hint_text: "Add Product"
+        helper_text: "Search --> Enter --> Add"
+        helper_text_mode: "on_focus"
+        icon_right: "cart-plus"
+        icon_right_color: app.theme_cls.primary_color
+        size_hint_x:None
+        width:150
+        focus: True
+        write_tab: False
+        on_text: root.dddd(self.text)
+        on_text_validate: root.askqty()
+
+    MDTextField:
+        id: deletesearch
+        pos_hint: {'center_x': 0.15,'center_y':0.4}
+        hint_text: "Delete list"
+        helper_text: "Search --> Enter --> Delete"
+        helper_text_mode: "on_focus"
+        icon_right: "cart-minus"
+        icon_right_color: app.theme_cls.primary_color
+        size_hint_x:None
+        width:150
+        write_tab: False
+        on_text: app.root.get_screen('main').searchdelete(self.text)
+        on_text_validate: app.root.get_screen('main').deleterows()
+    
+
+    MDFillRoundFlatIconButton:
+        pos_hint: {'center_x': 0.5,'center_y':0.05}
+        icon: "exit-to-app"
+        text: "Close"
+        md_bg_color: "orange"
+        on_release: 
+			app.root.current = "Login"
+			root.manager.transition.direction = "right"
+    
+
+    MDCard:
+        id: tcard
+        size_hint: 0.2, 0.3
+        
+        pos_hint: {"center_x": 0.85, "center_y": 0.7}
+        elevation: 5
+        padding: 25
+        spacing: 25
+        orientation: 'vertical'
+
+        MDLabel:
+            font_style: 'H6'
+            text: "Total Amount"
+        MDLabel:
+            id: showtotal
+            font_style: 'H4'
+            text: "0"
+            parent_background: "orange"
+
+        MDFillRoundFlatIconButton:
+            icon: "cart-check"
+            text: "ok"
+            md_bg_color: "orange"
+            on_release: root.sale()
+            
+
+        
+
+    
+
+    
+        
+    
+    
+        
+    
