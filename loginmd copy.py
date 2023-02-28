@@ -27,8 +27,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
-
+import os
 import hvac
+from fpdf import FPDF
 
 # Button:
 # 			text: "Next Screen"
@@ -780,14 +781,16 @@ class MainScreen(MDScreen):
         else:
             cur.execute(f""" select *  from (SELECT customer_name,check_customer = crypt('{self.saledialog.content_cls.ids.cuscheck.text}',check_customer) as "check" from customer) as ss where "check" """)
             cusid = cur.fetchall()
-        cur.execute("select concat('INV',currval('salesamount_id_seq'))")
+        cur.execute("select concat('INV',nextval('salesamount_id_seq'))")
         curinv = cur.fetchall()
         print('customerid',cusid[0][0])
+
         CustomerName = cusid[0][0]
         ConatctNumber = self.saledialog.content_cls.ids.cuscheck.text
         Address = '-'
-        InvoiceNumber = curive[0]
+        InvoiceNumber = curinv[0][0]
         InvoiceDate = str(datetime.datetime.now())
+        
         itemslist = []
         pdflist = []
         i = 0
@@ -795,9 +798,12 @@ class MainScreen(MDScreen):
             
             i = i+1
             itemslist.append([i,row[3],row[6],proid[0]])
+        print(itemslist)
 
         for items in itemslist:
-            pdflist.append({"description": f"Pr {items[0]}", "quantity": f"{items[1]}", "price": f"{items[2]}", "Product Name": f"{items[3]}"})
+            pdflist.append({"description": f"Pr {items[0]}", "quantity": f"{items[1]}", "price": f"{items[5]}", "Product Name": f"{items[3]}", "Total": f"{items[6]}"})
+
+        print(pdflist)
 
 
         # Items = [
@@ -831,7 +837,7 @@ class MainScreen(MDScreen):
         pdf.cell(200, 10, txt=f"Address: {Address}", ln=0.5, align="L")
         pdf.cell(200, 10, txt="", ln=1)
 
-        pdf.cell(50, 10, txt="Product Code", border=1)
+       
         pdf.cell(50, 10, txt="Product Name", border=1)
         pdf.cell(30, 10, txt="Quantity", border=1)
         pdf.cell(30, 10, txt="Price", border=1)
@@ -841,13 +847,15 @@ class MainScreen(MDScreen):
         total_price = 0
 
         for item in pdflist:
+            print(item)
             pdf.cell(50, 10, txt=Item["Product Name"], border=1)
-            pdf.cell(50, 10, txt=Item["description"], border=1)
-            pdf.cell(30, 10, txt=str(Item["quantity"]), border=1)
+            pdf.cell(50, 10, txt=Item["quantity"], border=1)
             pdf.cell(30, 10, txt=str(Item["price"]), border=1)
-            total = Item["quantity"] * Item["price"]
-            total_price += total
-            pdf.cell(30, 10, txt=str(total), border=1)
+            pdf.cell(30, 10, txt=str(Item["price"]), border=1)
+            # total = Item["quantity"] * Item["price"]
+
+            # total_price += total
+            pdf.cell(30, 10, txt=str(Item["Total"]), border=1)
             pdf.cell(10, 10, txt="", ln=1)
 
         pdf.cell(110, 10, txt="")
@@ -861,9 +869,72 @@ class MainScreen(MDScreen):
         pdf.cell(30, 10, txt="")
         pdf.cell(30, 10, txt="")
         pdf.cell(30, 10, txt="Total:", align = 'R')
-        pdf.cell(30, 10, txt=str(total_price), align = 'L')
+        pdf.cell(30, 10, txt= self.saledialog.content_cls.ids.tamount.text, align = 'L')
 
-        pdf.output("invoice.pdf")
+        pdf.output("invoice/invoice.pdf")
+
+        if self.saledialog.content_cls.ids.cuscheck.text.isdigit():
+            pass
+        else:
+            fromaddr = "dummyaccforpython3@gmail.com"
+            toaddr = f"{self.saledialog.content_cls.ids.cuscheck.text}"
+
+            # instance of MIMEMultipart
+            msg = MIMEMultipart()
+
+            # storing the senders email address
+            msg['From'] = fromaddr
+
+            # storing the receivers email address
+            msg['To'] = toaddr
+
+            # storing the subject
+            msg['Subject'] = "Test message"
+
+            # string to store the body of the mail
+            body = "Just Testing dummy"
+
+            # attach the body with the msg instance
+            msg.attach(MIMEText(body, 'plain'))
+
+            # open the file to be sent
+            filename = "invoice.pdf"
+            attachment = open("/home/prakash/kivysales/invoice/invoice.pdf", "rb")
+
+            # instance of MIMEBase and named as p
+            p = MIMEBase('application', 'octet-stream')
+
+            # To change the payload into encoded form
+            p.set_payload((attachment).read())
+
+            # encode into base64
+            encoders.encode_base64(p)
+
+            p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+
+            # attach the instance 'p' to instance 'msg'
+            msg.attach(p)
+
+            # creates SMTP session
+            s = smtplib.SMTP('smtp.gmail.com', 587)
+
+            # start TLS for security
+            s.starttls()
+
+            # Authentication
+            s.login(fromaddr, "emljyehsiaztaylt")
+
+            # Converts the Multipart msg into a string
+            text = msg.as_string()
+
+            # sending the mail
+            s.sendmail(fromaddr, toaddr, text)
+
+            # terminating the session
+            s.quit()
+
+        file_path = 'invoice/invoice.pdf'
+        os.remove(file_path)
         conn.commit()
         cur.close()
         conn.close()
@@ -944,65 +1015,6 @@ class MainScreen(MDScreen):
             # empid= cur.fetchone()
             print('employeeid',empid[0])
             print(self.saledialog.content_cls.ids.cuscheck.text)
-            if self.saledialog.content_cls.ids.cuscheck.text.isdigit():
-                pass
-            else:
-                fromaddr = "dummyaccforpython3@gmail.com"
-                toaddr = f"{self.saledialog.content_cls.ids.cuscheck.text}"
-
-                # instance of MIMEMultipart
-                msg = MIMEMultipart()
-
-                # storing the senders email address
-                msg['From'] = fromaddr
-
-                # storing the receivers email address
-                msg['To'] = toaddr
-
-                # storing the subject
-                msg['Subject'] = "Test message"
-
-                # string to store the body of the mail
-                body = "Just Testing dummy"
-
-                # attach the body with the msg instance
-                msg.attach(MIMEText(body, 'plain'))
-
-                # open the file to be sent
-                filename = "1-insert-supplier.csv"
-                attachment = open("/home/prakash/kivysales/1-insert-supplier.csv", "rb")
-
-                # instance of MIMEBase and named as p
-                p = MIMEBase('application', 'octet-stream')
-
-                # To change the payload into encoded form
-                p.set_payload((attachment).read())
-
-                # encode into base64
-                encoders.encode_base64(p)
-
-                p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-
-                # attach the instance 'p' to instance 'msg'
-                msg.attach(p)
-
-                # creates SMTP session
-                s = smtplib.SMTP('smtp.gmail.com', 587)
-
-                # start TLS for security
-                s.starttls()
-
-                # Authentication
-                s.login(fromaddr, "emljyehsiaztaylt")
-
-                # Converts the Multipart msg into a string
-                text = msg.as_string()
-
-                # sending the mail
-                s.sendmail(fromaddr, toaddr, text)
-
-                # terminating the session
-                s.quit()
 
             cur.execute("select product_id, supplier_id from product where stock <= cast(stock_threshold as integer)")
             alle = cur.fetchall()
@@ -1068,6 +1080,7 @@ class MainScreen(MDScreen):
             
             cur.close()
             conn.close()
+            self.invoicecreation()
             self.success = MDDialog(
 				    title = "Transaction succussfull",
 				    buttons =[
